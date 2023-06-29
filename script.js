@@ -4,11 +4,12 @@ const ctx = canvas.getContext("2d");
 const brickRowCount = Math.floor(Math.random() * 6) + 3;
 const brickHeight = 60;
 const bricks = [];
-const platformWidth = 120;
+const platformWidth = 150;
 const platformHeight = 20;
+const platformY = 15
 const ball = {
   x: canvas.width / 2,
-  y: canvas.height - platformHeight - 15,
+  y: canvas.height - platformHeight - platformY - 15,
   radius: 15,
   color: 'blue',
   delta: 5
@@ -51,7 +52,7 @@ function drawBricks() {
 
 function drawPlatform() {
   ctx.fillStyle = "red";
-  ctx.fillRect(platformX, canvas.height - platformHeight, platformWidth, platformHeight);
+  ctx.fillRect(platformX, canvas.height - platformHeight-platformY  , platformWidth, platformHeight);
 }
 
 
@@ -90,7 +91,6 @@ function checkCollision() {
       ballRandom *= -1;
     }
   }
-
 }
 
 document.addEventListener('keydown', (e) => {
