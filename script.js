@@ -12,7 +12,7 @@ const ball = {
   y: canvas.height - platformHeight - platformY - 15,
   radius: 15,
   color: 'blue',
-  delta: 5
+  delta: 30
 };
 let ballRandom = Math.trunc(Math.random() * 2) - 1;
 let platformX = (canvas.width - platformWidth) / 2;
@@ -52,14 +52,16 @@ function drawBricks() {
 
 function drawPlatform() {
   ctx.fillStyle = "red";
-  ctx.fillRect(platformX, canvas.height - platformHeight-platformY  , platformWidth, platformHeight);
+  ctx.fillRect(platformX, canvas.height - platformHeight - platformY, platformWidth, platformHeight);
 }
 
 
 function drawBall() {
+  ctx.beginPath()
   ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
   ctx.fillStyle = ball.color;
   ctx.fill();
+  ctx.stroke
 }
 
 
@@ -71,12 +73,20 @@ function draw() {
   drawPlatform()
 }
 function jumpBall() {
-  if (!ballRandom) (ballRandom = Math.round(Math.random() * 2) - 1)
+  if (ball.y + ball.radius >= canvas.height) {
+    ball.y = canvas.height - ball.radius;
+    ball.delta = -ball.delta;
+  }
+
+  if (!ballRandom) (ballRandom = Math.round(Math.random() * 2) - 1);
   ctx.beginPath();
-  ball.y -= ball.delta
-  ball.x += ballRandom * 5
-  ctx.stroke()
+  ball.y -= ball.delta;
+  ball.x += ballRandom * 30;
+  ctx.stroke();
+
+
 }
+
 
 
 function checkCollision() {
@@ -87,19 +97,42 @@ function checkCollision() {
       bricks.splice(i, 1);
       break;
     }
-    if (ball.x + ball.radius > canvas.width - ball.delta || ball.x - ball.radius < ball.delta) {
-      ballRandom *= -1;
-    }
+
+  }
+  if (ball.x + ball.radius > canvas.width - ball.delta || ball.x - ball.radius < ball.delta) {
+    ballRandom *= -1; 
+  }
+  if (
+    ball.y + ball.radius >= canvas.height - platformHeight - platformY &&
+    ball.x + ball.radius >= platformX &&
+    ball.x - ball.radius <= platformX + platformWidth
+  ) {
+    ball.delta = -ball.delta;
+    ball.y = canvas.height - platformHeight - platformY - ball.radius;
+  }
+
+  if (ball.y - ball.radius <=0) {
+    ball.delta = -ball.delta
+  }
+
+}
+
+function gameOver() {
+  if (ball.y === canvas.height) {
+    alert('hajox ape')
   }
 }
 
 document.addEventListener('keydown', (e) => {
   console.log(e.key);
   if (e.key === 'ArrowRight' || e.key === 'd') {
-    platformX !== 400 && (platformX += 20)
+    (platformX <= (canvas.width - platformWidth)) && (platformX += 20)
+    !isPressed && ball.x <= canvas.width - ball.radius - platformWidth / 2 && (ball.x += 20)
   }
   if (e.key === 'ArrowLeft' || e.key === 'a') {
-    platformX !== 0 && (platformX -= 20)
+    (platformX >= 0) && (platformX -= 20)
+    !isPressed && ball.x >= platformWidth / 2 && (ball.x -= 20)
+
   }
   if (e.key === ' ') {
     isPressed = true
@@ -107,11 +140,16 @@ document.addEventListener('keydown', (e) => {
 })
 
 function loop() {
+  // if (ball.y + ball.radius >= canvas.height) {
+  //   return
+  // }
   requestAnimationFrame(loop)
   draw()
   if (isPressed === true) {
     jumpBall()
   }
+
+
   checkCollision()
 }
 
