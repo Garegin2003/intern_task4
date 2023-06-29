@@ -24,7 +24,8 @@ for (let i = 0; i < brickRowCount; i++) {
       x: brickX,
       y: brickY,
       width: brickWidth,
-      height: brickHeight
+      height: brickHeight,
+      color: `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`
     });
     brickX += brickWidth;
   }
@@ -34,7 +35,7 @@ for (let i = 0; i < brickRowCount; i++) {
 
 function drawBricks() {
   for (let i = 0; i < bricks.length; i++) {
-    ctx.fillStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+    ctx.fillStyle = bricks[i].color;
     ctx.fillRect(bricks[i].x, bricks[i].y, bricks[i].width, bricks[i].height);
   }
 }
@@ -42,13 +43,29 @@ function drawBricks() {
 function drawPlatform() {
   ctx.fillStyle = "black";
   ctx.fillRect(platformX, canvas.height - platformHeight, platformWidth, platformHeight);
-  document.addEventListener()
+
 }
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawBricks();
-  drawPlatform();
 }
 
-draw();
+function loop() {
+  requestAnimationFrame(loop)
+  draw()
+  drawPlatform()
+}
+
+loop();
+
+
+document.addEventListener('keydown',  (e) => {
+  console.log(e.key);
+  if (e.key === 'ArrowRight' || e.key === 'd') {
+    platformX !== 400 && (platformX += 10)
+  }
+  if (e.key === 'ArrowLeft' || e.key === 'a') {
+    platformX !== 0 && (platformX-=10)
+  }
+})
