@@ -39,11 +39,16 @@ function drawBricks() {
   }
 }
 
+function drawPlatform() {
+  ctx.fillStyle = "black";
+  ctx.fillRect(platformX, canvas.height - platformHeight, platformWidth, platformHeight);
+  document.addEventListener()
+}
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawBricks();
-
+  drawPlatform();
 }
 
 draw();
