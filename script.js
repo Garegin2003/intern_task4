@@ -6,7 +6,14 @@ const brickHeight = 60;
 const bricks = [];
 const platformWidth = 120;
 const platformHeight = 20;
+const ball = {
+  x: canvas.width / 2,
+  y: canvas.height - platformHeight,
+  radius: 10,
+  color: 'blue',
+};
 let platformX = (canvas.width - platformWidth) / 2;
+
 
 const randomWidths = [];
 for (let j = 0; j < brickRowCount; j++) {
@@ -41,10 +48,17 @@ function drawBricks() {
 }
 
 function drawPlatform() {
-  ctx.fillStyle = "black";
+  ctx.fillStyle = "red";
   ctx.fillRect(platformX, canvas.height - platformHeight, platformWidth, platformHeight);
-
 }
+
+
+function drawBall() {
+  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+  ctx.fillStyle = ball.color;
+  ctx.fill();
+}
+
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -55,6 +69,7 @@ function loop() {
   requestAnimationFrame(loop)
   draw()
   drawPlatform()
+  drawBall()
 }
 
 loop();
