@@ -11,7 +11,7 @@ const ball = {
   y: canvas.height - platformHeight - 15,
   radius: 15,
   color: 'blue',
-  delta: 0
+  delta: 5
 };
 let ballRandom = Math.trunc(Math.random() * 2) - 1;
 let platformX = (canvas.width - platformWidth) / 2;
@@ -72,18 +72,34 @@ function draw() {
 function jumpBall() {
   if (!ballRandom) (ballRandom = Math.round(Math.random() * 2) - 1)
   ctx.beginPath();
-  ball.y -= 5
+  ball.y -= ball.delta
   ball.x += ballRandom * 5
   ctx.stroke()
+}
+
+
+function checkCollision() {
+  for (let i = 0; i < bricks.length; i++) {
+    const b = bricks[i];
+    if (ball.x + ball.radius > b.x && ball.x - ball.radius < b.x + b.width && ball.y + ball.radius > b.y && ball.y - ball.radius < b.y + b.height) {
+      ball.delta = -ball.delta
+      bricks.splice(i, 1);
+      break;
+    }
+    if (ball.x + ball.radius > canvas.width - ball.delta || ball.x - ball.radius < ball.delta) {
+      ballRandom *= -1;
+    }
+  }
+
 }
 
 document.addEventListener('keydown', (e) => {
   console.log(e.key);
   if (e.key === 'ArrowRight' || e.key === 'd') {
-    platformX !== 400 && (platformX += 10)
+    platformX !== 400 && (platformX += 20)
   }
   if (e.key === 'ArrowLeft' || e.key === 'a') {
-    platformX !== 0 && (platformX -= 10)
+    platformX !== 0 && (platformX -= 20)
   }
   if (e.key === ' ') {
     isPressed = true
@@ -96,6 +112,7 @@ function loop() {
   if (isPressed === true) {
     jumpBall()
   }
+  checkCollision()
 }
 
 loop();
