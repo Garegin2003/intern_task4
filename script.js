@@ -8,12 +8,14 @@ const platformWidth = 120;
 const platformHeight = 20;
 const ball = {
   x: canvas.width / 2,
-  y: canvas.height - platformHeight,
-  radius: 10,
+  y: canvas.height - platformHeight - 15,
+  radius: 15,
   color: 'blue',
+  delta: 0
 };
+let ballRandom = Math.trunc(Math.random() * 2) - 1;
 let platformX = (canvas.width - platformWidth) / 2;
-
+let isPressed = false
 
 const randomWidths = [];
 for (let j = 0; j < brickRowCount; j++) {
@@ -62,25 +64,38 @@ function drawBall() {
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   drawBricks();
-}
-
-function loop() {
-  requestAnimationFrame(loop)
-  draw()
-  drawPlatform()
   drawBall()
+  drawPlatform()
+}
+function jumpBall() {
+  if (!ballRandom) (ballRandom = Math.round(Math.random() * 2) - 1)
+  ctx.beginPath();
+  ball.y -= 5
+  ball.x += ballRandom * 5
+  ctx.stroke()
 }
 
-loop();
-
-
-document.addEventListener('keydown',  (e) => {
+document.addEventListener('keydown', (e) => {
   console.log(e.key);
   if (e.key === 'ArrowRight' || e.key === 'd') {
     platformX !== 400 && (platformX += 10)
   }
   if (e.key === 'ArrowLeft' || e.key === 'a') {
-    platformX !== 0 && (platformX-=10)
+    platformX !== 0 && (platformX -= 10)
+  }
+  if (e.key === ' ') {
+    isPressed = true
   }
 })
+
+function loop() {
+  requestAnimationFrame(loop)
+  draw()
+  if (isPressed === true) {
+    jumpBall()
+  }
+}
+
+loop();
