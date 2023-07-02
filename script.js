@@ -18,12 +18,14 @@ const ball = {
 const life = document.querySelector('.life');
 const win = document.querySelector('.win');
 const tryAgain = document.querySelector('.game-over');
+const randomWidths = [];
 let ballRandom = Math.trunc(Math.random() * 2) - 1;
 let platformX = (canvas.width - platformWidth) / 2;
 let isPressed = false;
 let a = 3;
+let platformBend = 0;
+let ballBend = 0;
 
-const randomWidths = [];
 for (let j = 0; j < brickRowCount; j++) {
   const random = Math.floor(Math.random() * 6) + 3;
   randomWidths.push(random);
@@ -88,25 +90,42 @@ function draw() {
   drawPlatform();
 }
 function jumpBall() {
+  if (ballRandom === 0) ballRandom = Math.round(Math.random() * 2) - 1;
+
   if (ball.y + ball.radius >= canvas.height) {
     ball.y = canvas.height - ball.radius;
     ball.delta = -ball.delta;
+    const bendInterval = setInterval(() => {
+      platformBend -= 5;
+      ballBend -= 0.1;
+ 
+      platformX += platformBend;
+      ball.x += ballBend;
+ 
+      if (platformBend <= -15) {
+        clearInterval(bendInterval);
+        platformX = (canvas.width - platformWidth) / 2; 
+        ball.x = canvas.width / 2; 
+        ball.y = canvas.height - platformHeight - platformY - ballRadius;
+        isPressed = false;
+      }
+    }, 10);
   }
 
-  if (!ballRandom) ballRandom = Math.round(Math.random() * 2) - 1;
   ctx.beginPath();
   ball.y -= ball.delta;
   ball.x += ballRandom * 5;
   ctx.stroke();
+  ctx.closePath()
 }
 function checkCollision() {
   for (let i = 0; i < bricks.length; i++) {
     const b = bricks[i];
     if (
-      ball.x + ball.radius > b.x &&
-      ball.x - ball.radius < b.x + b.width &&
-      ball.y + ball.radius > b.y &&
-      ball.y - ball.radius < b.y + b.height
+      ball.x + ball.radius >= b.x &&
+      ball.x - ball.radius <= b.x + b.width &&
+      ball.y + ball.radius >= b.y &&
+      ball.y - ball.radius <= b.y + b.height
     ) {
       bricks.splice(i, 1);
 
@@ -175,9 +194,8 @@ document.addEventListener('keydown', (e) => {
 function tryAgainHandler() {
   location.reload();
 }
-
 function loop() {
-  life.innerHTML = `<h1 class = "life__count">${a}</h1>`;
+  life.innerHTML = `<h1 class = "life__count">${a}, </h1>`;
   if (ball.y + ball.radius >= canvas.height) {
     if (a === 1) {
       tryAgain.innerHTML = `<h1 onclick = "tryAgainHandler()">tryAgain </h1>`;
@@ -185,18 +203,18 @@ function loop() {
     } else {
       a--;
     }
-  }
+  }  
+  draw();
   if (bricks.length === 0) {
     win.innerHTML = '<h1 class="win__text">Uraaa</h1> ';
     return;
   }
-  requestAnimationFrame(loop);
-  draw();
   if (isPressed === true) {
     jumpBall();
   }
 
   checkCollision();
+  requestAnimationFrame(loop);
 }
 
 loop();
