@@ -1,7 +1,14 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  text-align: center; }
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: self-start;
+  column-gap: 10px; }
   .container__canvas {
     border: 1px solid #000;
     background-color: #000; }
+  .container__icon {
+    width: 50px;
+    cursor: pointer; }

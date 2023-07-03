@@ -215,6 +215,11 @@ document.addEventListener('keydown', (e) => {
     isPressed = true;
   }
 });
+
+function reload() {
+  location.reload()
+}
+
 function loop() {
   if (ball.y + ball.radius >= canvas.height) {
     if (a === 1) {

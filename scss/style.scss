@@ -2,9 +2,18 @@
     max-width: 1200px;
     margin: 0 auto;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: self-start;
+    column-gap: 10px;
 
     &__canvas {
         border: 1px solid #000;
         background-color: #000;
+    }
+
+    &__icon {
+        width: 50px;
+        cursor: pointer;
     }
 }
