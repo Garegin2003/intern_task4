@@ -1,8 +1,8 @@
-const canvas = document.querySelector('#myCanvas');
+const canvas = document.querySelector('.container__canvas');
 const ctx = canvas.getContext('2d');
 
 const brickRowCount = Math.floor(Math.random() * 6) + 3;
-const brickHeight = 60;
+const brickHeight = 50;
 const bricks = [];
 const platformWidth = 150;
 const platformHeight = 20;
@@ -59,19 +59,32 @@ function drawBricks() {
 }
 
 function drawPlatform() {
-  ctx.fillStyle = 'red';
-  ctx.fillRect(
+  ctx.fillStyle = 'white';
+  roundRect(
     platformX,
     canvas.height - platformHeight - platformY,
     platformWidth,
-    platformHeight
+    platformHeight,
+    10
   );
+}
+
+function roundRect(x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + width, y, x + width, y + height, radius);
+  ctx.arcTo(x + width, y + height, x, y + height, radius);
+  ctx.arcTo(x, y + height, x, y, radius);
+  ctx.arcTo(x, y, x + width, y, radius);
+  ctx.closePath();
+  ctx.fill();
 }
 
 function drawBall() {
   ctx.beginPath();
   ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
   if (a === 2) {
+
     ball.color = 'yellow';
   }
   if (a === 1) {
@@ -88,6 +101,18 @@ function draw() {
   drawBricks();
   drawBall();
   drawPlatform();
+  ctx.font = '24px Arial'
+  ctx.fillStyle = 'white'
+  if(a===3){
+    ctx.fillText('🤍 🤍 🤍', 10, 776 ) 
+  }
+  if(a===2){
+    ctx.fillText('🤍 🤍', 10, 776)
+  }
+  if(a===1){
+    ctx.fillText('🤍', 10, 776)
+  }
+  
 }
 function jumpBall() {
   if (ballRandom === 0) ballRandom = Math.round(Math.random() * 2) - 1;
@@ -168,45 +193,50 @@ function checkCollision() {
     ball.delta = -ball.delta;
     ball.y = canvas.height - platformHeight - platformY - ball.radius;
   }
+
   if (ball.y - ball.radius <= 0) {
     ball.delta = -ball.delta;
     ball.y = ball.radius;
   }
 }
-
 document.addEventListener('keydown', (e) => {
   console.log(e.key);
   if (e.key === 'ArrowRight' || e.key === 'd') {
-    platformX <= canvas.width - platformWidth && (platformX += 20);
+    platformX <= canvas.width - platformWidth  && (platformX += 20);
     !isPressed &&
-      ball.x <= canvas.width - ball.radius - platformWidth / 2 &&
+      ball.x <= canvas.width  - (platformWidth / 2) &&
       (ball.x += 20);
   }
   if (e.key === 'ArrowLeft' || e.key === 'a') {
-    platformX >= 0 && (platformX -= 20);
-    !isPressed && ball.x >= platformWidth / 2 && (ball.x -= 20);
+    platformX > 0 && (platformX -= 20);
+    !isPressed && ball.x >= platformWidth / 2 && (ball.x -= 20) ;
   }
   if (e.key === ' ') {
     isPressed = true;
   }
 });
-
-function tryAgainHandler() {
-  location.reload();
-}
 function loop() {
-  life.innerHTML = `<h1 class = "life__count">${a}, </h1>`;
   if (ball.y + ball.radius >= canvas.height) {
     if (a === 1) {
-      tryAgain.innerHTML = `<h1 onclick = "tryAgainHandler()">tryAgain </h1>`;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.font = '70px Arial'
+      ctx.fillStyle = 'white'
+      ctx.fillText('lav ches xaxum axper jan', 250, 410)
+      canvas.addEventListener('click', () => {
+        location.reload()
+      })
       return;
     } else {
-      a--;
+      a--; 
     }
+
   }  
   draw();
   if (bricks.length === 0) {
-    win.innerHTML = '<h1 class="win__text">Uraaa</h1> ';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = '70px Arial'
+    ctx.fillStyle = 'white'
+    ctx.fillText('Verjapes haxtecirs', 300, 410)
     return;
   }
   if (isPressed === true) {
