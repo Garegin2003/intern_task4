@@ -1,0 +1,7 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center; }
+  .container__canvas {
+    border: 1px solid #000;
+    background-color: #000; }
