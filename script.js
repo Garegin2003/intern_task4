@@ -2,12 +2,12 @@ const canvas = document.querySelector('.container__canvas');
 const ctx = canvas.getContext('2d');
 const brickRowCount = Math.floor(Math.random() * 6) + 3;
 const brickHeight = 50;
-const bricks = [];
+let bricks = [];
 const platformWidth = 150;
 const platformHeight = 20;
 const platformY = 50;
-const ballRadius = 15;
-const ballSpeed = 5;
+const ballRadius = 20;
+const ballSpeed = 7;
 const ball = {
   x: canvas.width / 2,
   y: canvas.height - platformHeight - platformY - ballRadius,
@@ -19,7 +19,7 @@ const life = document.querySelector('.life');
 const win = document.querySelector('.win');
 const tryAgain = document.querySelector('.game-over');
 const randomWidths = [];
-let ballRandom = Math.trunc(Math.random() * 2) - 1;
+let ballRandom = Math.trunc(Math.random());
 let platformX = (canvas.width - platformWidth) / 2;
 let isPressed = false;
 let lives = 3;
@@ -29,30 +29,52 @@ let isMovingLeft = false;
 let isMovingRight = false;
 let score = 0;
 let points = 0;
+let level = 1;
 
 for (let j = 0; j < brickRowCount; j++) {
   const random = Math.floor(Math.random() * 6) + 3;
   randomWidths.push(random);
 }
-
-let brickY = 0;
-for (let i = 0; i < brickRowCount; i++) {
-  const random = randomWidths[i];
-  const brickWidth = canvas.width / random;
-  let brickX = 0;
-  for (let j = 0; j < random; j++) {
-    bricks.push({
-      x: brickX,
-      y: brickY,
-      width: brickWidth,
-      height: brickHeight,
-      color: `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${
-        Math.random() * 255
-      })`,
-    });
-    brickX += brickWidth;
+if (!level) {
+  let brickY = 0;
+  for (let i = 0; i < brickRowCount; i++) {
+    const random = randomWidths[i];
+    const brickWidth = canvas.width / random;
+    let brickX = 0;
+    for (let j = 0; j < random; j++) {
+      bricks.push({
+        x: brickX,
+        y: brickY,
+        width: brickWidth,
+        height: brickHeight,
+        color: randomColor(),
+      });
+      brickX += brickWidth;
+    }
+    brickY += brickHeight;
   }
-  brickY += brickHeight;
+}
+if (level) {
+  bricks = [];
+  let brickY = 0;
+
+  for (let i = 0; i < 4; i++) {
+    let brickX = canvas.width / 4;
+    for (let j = 0; j < 4; j++) {
+      bricks.push({
+        x: brickX,
+        y: brickY,
+        width: 150,
+        height: 100,
+        color: i === 3 ? 'grey' : randomColor(),
+        type: i === 3 ? 'chjardvox' : '',
+      });
+      brickX += 150;
+    }
+    brickY += 100;
+  }
+
+  console.log(bricks);
 }
 
 function drawBricks() {
@@ -60,6 +82,12 @@ function drawBricks() {
     ctx.fillStyle = bricks[i].color;
     ctx.fillRect(bricks[i].x, bricks[i].y, bricks[i].width, bricks[i].height);
   }
+}
+
+function randomColor() {
+  return `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${
+    Math.random() * 255
+  })`;
 }
 
 function drawPlatform() {
@@ -121,21 +149,20 @@ function movePlatform() {
     !isPressed && ball.x >= platformWidth / 2 && (ball.x -= 10);
   }
 }
+const currentScore = bricks.length;
 
 function drawScore() {
-  const currentScore = bricks.length;
-
   ctx.font = '16px Arial';
   ctx.fillStyle = 'white';
   ctx.fillText(
-    `score ${currentScore}/${score}`,
+    `score ${currentScore} / ${score}`,
     canvas.width - 100,
     canvas.height - 35
   );
   ctx.fillText(`points ${points}`, canvas.width - 100, canvas.height - 13);
 }
 function jumpBall() {
-  if (ballRandom === 0) ballRandom = Math.round(Math.random() * 2) - 1;
+  if (ballRandom === 0) ballRandom = -1;
 
   if (ball.y + ball.radius >= canvas.height) {
     ball.y = canvas.height - ball.radius;
@@ -143,10 +170,8 @@ function jumpBall() {
     const bendInterval = setInterval(() => {
       platformBend -= 5;
       ballBend -= 0.1;
-
       platformX += platformBend;
       ball.x += ballBend;
-
       if (platformBend <= -15) {
         clearInterval(bendInterval);
         platformX = (canvas.width - platformWidth) / 2;
@@ -154,7 +179,7 @@ function jumpBall() {
         ball.y = canvas.height - platformHeight - platformY - ballRadius;
         isPressed = false;
       }
-    }, 10);
+    }, 15);
   }
 
   ctx.beginPath();
@@ -166,30 +191,22 @@ function jumpBall() {
 function checkCollision() {
   for (let i = 0; i < bricks.length; i++) {
     const b = bricks[i];
-    if (
-      ball.x + ball.radius >= b.x &&
-      ball.x - ball.radius <= b.x + b.width &&
-      ball.y + ball.radius >= b.y &&
-      ball.y - ball.radius <= b.y + b.height
-    ) {
-      bricks.splice(i, 1);
-      score++;
-      points += Math.trunc(b.width * score);
-      console.log(points);
-      let closestX = Math.max(b.x, Math.min(ball.x, b.x + b.width));
-      let closestY = Math.max(b.y, Math.min(ball.y, b.y + b.height));
+    const deltaX = ball.x - Math.max(b.x, Math.min(ball.x, b.x + b.width));
+    const deltaY = ball.y - Math.max(b.y, Math.min(ball.y, b.y + b.height));
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-      let distanceX = ball.x - closestX;
-      let distanceY = ball.y - closestY;
+    if (distance <= ball.radius) {
+      b.type !== 'chjardvox' && bricks.splice(i, 1);
+      b.type !== 'chjardvox' && score++;
+      b.type !== 'chjardvox' && (points += Math.trunc(b.width * score));
 
-      let angle = Math.atan2(distanceY, distanceX);
-      console.log(angle, Math.PI);
-      let collisionAngle = Math.abs(angle);
+      const angle = Math.atan2(deltaY, deltaX);
+      const collisionAngle = Math.abs(angle);
 
       if (collisionAngle > Math.PI / 4 && collisionAngle < (3 * Math.PI) / 4) {
-        ball.delta *= -1;
+        ball.delta *= -1; // Reflect horizontally
       } else {
-        ballRandom *= -1;
+        ballRandom *= -1; // Reflect vertically
       }
 
       break;
@@ -280,10 +297,51 @@ function loop() {
 
   if (bricks.length === 0) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = '70px Arial';
-    ctx.fillStyle = 'white';
-    ctx.fillText('Verjapes haxtecirs', 300, 410);
-    return;
+    if (level === 0) {
+      level = 1;
+      console.log(level);
+    }
+    if (level === 1) {
+      score = 0;
+      bricks = [];
+
+      let brickY = 0;
+
+      for (let i = 0; i < 4; i++) {
+        let brickX = canvas.width / 4;
+        for (let j = 0; j < 4; j++) {
+          bricks.push({
+            x: brickX,
+            y: brickY,
+            width: 150,
+            height: 100,
+            color: i === 3 ? 'grey' : randomColor(),
+            type: i === 3 ? 'chjardvox' : '',
+          });
+          brickX += 150;
+        }
+        brickY += 100;
+      }
+      const bricksFilter = bricks.filter((b) => b.type !== 'chjardvox');
+
+      platformX = (canvas.width - platformWidth) / 2;
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height - platformHeight - platformY - ballRadius;
+      isPressed = false;
+      draw();
+      if (bricksFilter.length === 0) {
+        level = 2;
+      }
+      console.log(level);
+    }
+    if (level === 2) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.font = '70px Arial';
+      ctx.fillStyle = 'white';
+      ctx.fillText('Verjapes haxtecirs', 300, 410);
+      return;
+    }
   }
 
   if (isPressed) {
