@@ -6,7 +6,7 @@ const platformWidth = 150;
 const platformHeight = 20;
 const platformY = 50;
 const ballRadius = 20;
-const ballSpeed = 7;
+let ballSpeed = 5;
 const ball = {
   x: canvas.width / 2,
   y: canvas.height - platformHeight - platformY - ballRadius,
@@ -277,6 +277,7 @@ function loop() {
       ctx.font = '70px Arial';
       ctx.fillStyle = 'white';
       ctx.fillText('lav ches xaxum axper jan', 250, 410);
+      ctx.fillText('sxmi noric xaxa', 350 , 480);
       canvas.addEventListener('click', () => {
         location.reload();
       });
@@ -324,6 +325,7 @@ function loop() {
   }
   if (bricks.filter((e) => e.type !== 'unbreakable').length === 0) {
     if (level === 1) {
+      ballSpeed = 7
       score = 0;
       bricks = [];
     }
