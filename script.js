@@ -44,7 +44,7 @@ function levelOneGeneration() {
   let brickY = 0;
 
   for (let i = 0; i < brickRowCount; i++) {
-    
+
     const random = randomWidths[i];
     const brickWidth = canvas.width / random;
     let brickX = 0;
@@ -80,19 +80,21 @@ function levelTwoGeneration() {
     let brickX = canvas.width / 4;
 
     for (let j = 0; j < 4; j++) {
-
+    
       bricks.push({
         x: brickX,
         y: brickY,
         width: 150,
         height: 100,
         color: i === 3 ? 'grey' : randomColor(),
-        type: i === 3 ? 'unbreakable' : '',
+        type: i === 3 ? 'unbreakable' : ''
 
       });
+
       brickX += 150;
 
     }
+  
     brickY += 100;
 
   }
@@ -117,10 +119,8 @@ function drawBricks() {
 }
 
 function randomColor() {
-
-  return `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${
-    Math.random() * 255
-  })`;
+  return `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255
+    })`;
 
 }
 
@@ -197,6 +197,7 @@ function movePlatform() {
   }
 
 }
+
 let currentScore = bricks.length;
 
 function drawScore() {
@@ -261,8 +262,9 @@ function checkCollision() {
     ball.y - ball.radius <= canvas.height - platformY &&
     ball.x + ball.radius >= platformX &&
     ball.x - ball.radius <= platformX + platformWidth
-  ) {
-
+  ) 
+  {
+    
     if (ball.y + ball.radius <= canvas.height - platformY) {
       ball.delta = -ball.delta;
       ball.y = canvas.height - platformHeight - platformY - ball.radius;
@@ -272,8 +274,8 @@ function checkCollision() {
     } else if (ball.x - ball.radius >= platformX + platformWidth / 2) {
       ballRandom = -ballRandom;
       ball.x = platformX + platformWidth + ballSpeed + ball.radius;
+    
     }
-
   }
 
   if (ball.y - ball.radius <= 0) {
@@ -323,20 +325,20 @@ document.addEventListener('keyup', (e) => {
 
 });
 
-canvas.addEventListener('mousemove', (e) => {
+if (!isPressed) {
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
 
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = e.clientX - rect.left;
+    const minPlatformX = 0;
+    const maxPlatformX = canvas.width - platformWidth;
 
-  const minPlatformX = 0;
-  const maxPlatformX = canvas.width - platformWidth;
-
-  platformX = Math.max(
-    minPlatformX,
-    Math.min(mouseX - platformWidth / 2, maxPlatformX)
-  );
-
-});
+    platformX = Math.max(
+      minPlatformX,
+      Math.min(mouseX - platformWidth / 2, maxPlatformX)
+    );
+  });
+}
 
 function reload() {
 
@@ -360,7 +362,7 @@ function reload() {
 }
 
 function loop() {
-  
+
   animationId = requestAnimationFrame(loop);
 
   draw();
@@ -381,7 +383,6 @@ function loop() {
       canvas.addEventListener('click', () => {
 
         if (!isTryAgain) {
-
           return;
         }
 
@@ -415,21 +416,19 @@ function loop() {
 
     if (level === 0) {
       level = 1;
-
     }
-    draw();
 
+    draw();
   }
 
   if (bricks.filter((e) => e.type !== 'unbreakable').length === 0) {
 
     if (level === 1) {
-
       ballSpeed = 7;
       score = 0;
       bricks = [];
-
     }
+
   }
 
   if (
