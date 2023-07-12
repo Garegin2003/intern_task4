@@ -407,6 +407,7 @@ function loop() {
 
     levelTwoGeneration();
     currentScore = bricks.length.filter((e) => e.type !== 'unbreakable');
+    ballSpeed = 7;
 
   }
 
@@ -424,7 +425,6 @@ function loop() {
   if (bricks.filter((e) => e.type !== 'unbreakable').length === 0) {
 
     if (level === 1) {
-      ballSpeed = 7;
       score = 0;
       bricks = [];
     }
@@ -439,7 +439,7 @@ function loop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = '70px Arial';
     ctx.fillStyle = 'white';
-    ctx.fillText('Verjapes haxtecirs', 300, 410);
+    ctx.fillText('Verjapes haxtecir', 300, 410);
     ctx.fillText(`Qo miavorn e ${points}`, 300, 500);
     cancelAnimationFrame(animationId);
 
